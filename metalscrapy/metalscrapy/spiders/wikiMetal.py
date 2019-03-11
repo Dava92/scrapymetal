@@ -2,6 +2,7 @@
 import scrapy
 import re
 import pandas as pd
+import datetime
 
 class WikimetalSpider(scrapy.Spider):
     name = 'wikiMetal'
@@ -19,11 +20,15 @@ class WikimetalSpider(scrapy.Spider):
                 
             artistaL = [re.sub(artistaRE,'',str(artista)) for artista in artistaAlbum]
             albumL = [re.sub(albumRE,'',str(album)) for album in artistaAlbum]
-            fechaL = [int('2019'+ str(f)[3:5] + str(f)[0:2]) for f in fecha]
+            fechaL = [str(f)[0:2] + '/' + str(f)[3:5] + '/' + '2019' for f in fecha]
 
-            lista = dict(fecha = fechaL, artista = artistaL, album = albumL)
+            lista = dict(ReleaseDate = fechaL, 
+                         Band = artistaL, 
+                         Album = albumL, 
+                         LoadDate = "{:%d/%m/%Y}".format(datetime.date.today()))
             listaDF = pd.DataFrame(lista)
             listaDF.to_csv('albums.csv')
+            
             print("Se proceso con exito la Lista de Albums :)")
         
         except:
